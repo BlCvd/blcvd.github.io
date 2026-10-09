@@ -14,6 +14,7 @@ with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
     context = browser.new_context(viewport={'width': 1440, 'height': 1050}, color_scheme='light', permissions=['clipboard-read', 'clipboard-write'])
     page = context.new_page()
+    page.set_default_navigation_timeout(60000)
     errors = []
     failed_requests = []
     network = []

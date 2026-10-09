@@ -101,3 +101,16 @@ GitHub：**仓库 → Actions → Deploy Hexo to GitHub Pages**；成功后 **Se
 - [GitHub 自定义 Pages 工作流](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
 - [Icarus 官方主题](https://github.com/ppoffice/hexo-theme-icarus)
 - [Hexo 8.1.2](https://github.com/hexojs/hexo/releases/tag/v8.1.2)
+
+## 首次部署验收记录（2026-10-09）
+
+- 公开仓库 [BlCvd/blcvd.github.io](https://github.com/BlCvd/blcvd.github.io)，默认分支 main。
+- [首次 Hexo Actions 工作流](https://github.com/BlCvd/blcvd.github.io/actions/runs/37932570978) 的 build 与 deploy 均成功；Pages API 核验 build_type=workflow、status=built。
+- [线上博客](https://blcvd.github.io/) 与 10 个其他关键路由均返回 200；不存在的 URL 返回自定义 404。
+- 本地 npm ci、build、check 通过；16 个 HTML 页面、810 处本地链接与资源引用，0 缺失。
+- 本地与线上 Chromium 验收均通过：搜索、实际代码复制、4 个 KaTeX 表达式、Mermaid 浅色/深色渲染、目录、主题记忆和返回顶部。
+- 桌面 1440 px；320 / 390 / 768 / 1024 px 响应式检查没有页面横向溢出，深色正文对比度满足 4.5:1。
+- 线上源码配置、.env 与草稿路径不被静态站点提供；草稿仅在本地 draft 预览中出现。
+- actionlint 与 PowerShell 语法校验通过。详细浏览器报告与截图保存在本机 reports/（不提交）。
+
+GitHub 对新建用户站点自动启用了 legacy Pages，创建 API 因此返回 409。执行者读取现状后使用官方 PUT API 切换为 workflow，再核验配置成功。完整在线浏览器检查遇到过一次连接超时，诊断后在 60 秒导航超时下复测通过；这不是未处理的页面错误。

@@ -2,6 +2,8 @@
 
 面向 AI 学习、论文阅读与工程记录的个人博客。使用官方 Hexo / Icarus npm 主题，保留经典三栏布局，用少量独立 CSS 与 Hexo 注入扩展完成定制。没有复制参考作者的文章、头像或个人资料。
 
+线上博客：[Personal Research Blog](https://blcvd.github.io/) · [GitHub 源码仓库](https://github.com/BlCvd/blcvd.github.io)
+
 ## 开始使用
 
 Windows PowerShell：

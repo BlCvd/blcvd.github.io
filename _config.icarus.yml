@@ -1,0 +1,95 @@
+version: 5.1.0
+variant: default
+logo:
+  text: Research / Notes
+head:
+  favicon: /img/favicon.svg
+  manifest:
+    name: Personal Research Blog
+    short_name: Research Notes
+    start_url: /
+    theme_color: '#326aab'
+    background_color: '#f5f7fa'
+    display: standalone
+    icons:
+      - src: /img/favicon.svg
+        sizes: any
+        type: image/svg+xml
+  open_graph:
+    image: /img/research-cover.svg
+  structured_data: null
+  meta: []
+  rss: null
+navbar:
+  menu:
+    首页: /
+    归档: /archives/
+    分类: /categories/
+    标签: /tags/
+    项目: /projects/
+    关于: /about/
+  links:
+    GitHub:
+      icon: fab fa-github
+      url: https://github.com/BlCvd
+footer:
+  copyright: 记录、理解、构建。
+  links: {}
+article:
+  highlight:
+    theme: atom-one-light
+    clipboard: false
+    fold: ''
+  readtime: true
+  update_time: auto
+  licenses: null
+search:
+  type: insight
+  index_pages: true
+donates: []
+sidebar:
+  left:
+    sticky: false
+  right:
+    sticky: false
+widgets:
+  - type: profile
+    position: left
+    author: BlCvd
+    author_title: AI · Research · Engineering
+    avatar: /img/github-avatar.png
+    avatar_rounded: true
+    follow_link: https://github.com/BlCvd
+    social_links:
+      GitHub:
+        icon: fab fa-github
+        url: https://github.com/BlCvd
+  - type: links
+    position: left
+    links:
+      arXiv: https://arxiv.org/
+      Daily Papers: https://huggingface.co/papers
+      Hugging Face: https://huggingface.co/
+  - type: toc
+    position: right
+    index: true
+    collapsed: false
+    depth: 3
+  - type: recent_posts
+    position: right
+    count: 5
+  - type: categories
+    position: right
+  - type: tags
+    position: right
+    order_by: length
+    order: -1
+    amount: 20
+  - type: archives
+    position: right
+    format: YYYY 年 MM 月
+plugins: {}
+providers:
+  cdn: /vendor/${ package }/${ filename }
+  fontcdn: /css/fonts.css
+  iconcdn: /vendor/fontawesome/css/all.min.css

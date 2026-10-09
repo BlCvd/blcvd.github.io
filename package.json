@@ -1,0 +1,45 @@
+{
+  "name": "personal-research-blog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A personal academic blog built with Hexo and Icarus",
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "scripts": {
+    "clean": "hexo clean",
+    "build": "node tools/vendor-assets.cjs && hexo clean && hexo generate",
+    "dev": "node tools/vendor-assets.cjs && hexo server --ip 127.0.0.1 --port 4000 --draft",
+    "preview": "hexo server --ip 127.0.0.1 --port 4000 --static",
+    "new": "hexo new",
+    "draft": "hexo new draft",
+    "publish": "hexo publish",
+    "check": "node tools/check-site.cjs",
+    "profile": "node tools/profile.cjs",
+    "preflight": "npm run build && npm run check && node tools/preflight.cjs"
+  },
+  "hexo": {
+    "version": "8.1.2"
+  },
+  "dependencies": {
+    "@fontsource/source-code-pro": "5.3.0",
+    "@fontsource/ubuntu": "5.3.0",
+    "@fortawesome/fontawesome-free": "7.3.1",
+    "hexo": "8.1.2",
+    "hexo-generator-archive": "2.0.0",
+    "hexo-generator-category": "2.0.0",
+    "hexo-generator-index": "4.0.0",
+    "hexo-generator-tag": "2.0.0",
+    "hexo-server": "3.0.0",
+    "hexo-theme-icarus": "6.1.1",
+    "hexo-util": "4.0.0",
+    "highlight.js": "11.12.0",
+    "jquery": "4.0.0",
+    "js-yaml": "4.3.2",
+    "katex": "0.19.0",
+    "markdown-it": "15.0.2",
+    "markdown-it-texmath": "1.0.0",
+    "mermaid": "12.1.0",
+    "moment": "2.31.0"
+  }
+}

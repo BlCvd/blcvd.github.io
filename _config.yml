@@ -1,0 +1,68 @@
+title: Personal Research Blog
+subtitle: AI · Research · Engineering
+description: 记录人工智能学习、科研探索与工程实践。
+author: BlCvd
+language: zh-CN
+timezone: Asia/Shanghai
+url: https://blcvd.github.io
+root: /
+permalink: posts/:slug/
+permalink_defaults: {}
+pretty_urls:
+  trailing_index: false
+  trailing_html: true
+source_dir: source
+public_dir: public
+tag_dir: tags
+archive_dir: archives
+category_dir: categories
+code_dir: downloads/code
+i18n_dir: ':lang'
+skip_render:
+  - vendor/**
+  - css/**
+  - js/**
+  - img/**
+new_post_name: ':title.md'
+default_layout: post
+titlecase: false
+external_link:
+  enable: true
+  field: site
+  exclude: []
+filename_case: 0
+render_drafts: false
+post_asset_folder: false
+relative_link: false
+future: false
+syntax_highlighter: ''
+highlight:
+  enable: false
+prismjs:
+  enable: false
+markdown:
+  preset: default
+  render:
+    html: true
+    breaks: false
+    linkify: true
+    typographer: false
+  anchors:
+    level: 1
+    permalink: false
+    collisionSuffix: '-'
+index_generator:
+  path: ''
+  per_page: 6
+  order_by: '-date'
+default_category: 未分类
+category_map: {}
+tag_map: {}
+date_format: YYYY-MM-DD
+time_format: HH:mm:ss
+updated_option: date
+per_page: 10
+pagination_dir: page
+theme: icarus
+toc: true
+deploy: {}

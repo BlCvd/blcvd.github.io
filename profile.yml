@@ -1,0 +1,15 @@
+site:
+  title: Personal Research Blog
+  subtitle: AI · Research · Engineering
+  description: 记录人工智能学习、科研探索与工程实践。
+  url: https://blcvd.github.io
+author:
+  name: BlCvd
+  tagline: AI · Research · Engineering
+  github_username: BlCvd
+  github_url: https://github.com/BlCvd
+  avatar: /img/github-avatar.png
+publication:
+  approved: true
+  examples_approved: true
+  confirmed_on: '2026-10-09'

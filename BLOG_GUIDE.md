@@ -89,7 +89,51 @@ Hexo 的 `categories: [技术学习, 深度学习]` 表示上下级分类；如�
 
 如需从当前登录账户重新读取公开资料：`npm.cmd run profile`。它只读 GitHub API，但会覆盖作者名、用户名、链接、头像 URL 和 Pages URL；新的头像使用 GitHub 远程地址。
 
-正文介绍在 `source/about/index.md` 编辑，项目列表在 `source/projects/index.md` 编辑。导航、侧栏与 logo 文本在 `_config.icarus.yml` 编辑。不要直接改 `node_modules/hexo-theme-icarus/`。
+正文介绍在 `source/about/index.md` 编辑，项目资料在 `source/_data/projects.yml` 编辑；`source/projects/index.md` 保留项目页标题与搜索摘要。导航、首页侧栏与 logo 文本在 `_config.icarus.yml` 编辑，文章侧栏在 `_config.post.yml` 编辑。不要直接改 `node_modules/hexo-theme-icarus/`。
+
+## 研究主题与阅读提要
+
+首页三个主题来自 `source/_data/topics.yml`，按 `categories` 关联实际文章：论文阅读对应“论文阅读”，AI 实践对应“技术学习 / 科研记录”，工程记录对应“工程实践”。示例文章（`demo: true`）、草稿和未来日期文章不计入。没有文章时显示空状态；新增正式文章并重新构建后自动收录。
+
+给文章填写可选的 front matter 字段，就会在标题下显示阅读提要，并在文末显示资料链接：
+
+```yaml
+research:
+  question: 用一句话写出本文要解决的问题
+  takeaway: 写出已获得证据支持的核心结论
+  prerequisites:
+    - 所需前置知识
+references:
+  - title: 实际引用来源的标题
+    url: https://hexo.io/docs/
+code_url: https://github.com/BlCvd/blcvd.github.io
+```
+
+以上链接只是字段格式示例，请替换为这篇文章的真实来源与代码。未填写字段不会产生空提要或空资料区。引用只支持公开 HTTP(S) 链接与以 `/` 开头的本站路径；不允许脚本地址或嵌入凭据。
+
+普通、草稿、论文和项目模板均提供了这些字段。文章的 `updated` 填写实际修改时间，修改已有文章时一并更新。正文应把问题、核心结论、方法与证据、局限、参考资料写完整；复现文章区分原文结果和自己实际执行的结果。
+
+## 添加真实项目
+
+编辑 `source/_data/projects.yml`，在 `items: []` 位置写入项目列表。保留已有 `groups`；`group` 对应 `research`、`ai` 或 `engineering`。每个项目的必填字段为 `id`、`group`、`name`、`summary`、`role`、`status`、`technologies`、`links`。
+
+```yaml
+items:
+  - id: your-project-id
+    group: engineering
+    name: 你的真实项目名称
+    summary: 实际解决的问题与实现范围
+    role: 你实际承担的开发或协作职责
+    status: 进行中
+    technologies:
+      - Python
+    evidence: 实际完成的测试、结果或验证范围
+    links: {}
+```
+
+这是一份待作者替换的格式示例。`status` 可填“进行中 / 已发布 / 已归档”；`links` 中可加入 `code`（仓库）、`demo`（演示）、`article`（本站项目文章），各字段填写完整 URL 或本站 `/posts/slug/`。不提供链接时保留 `{}`。`evidence` 可选，应如实填写。未知分组、不完整字段或不安全链接会让构建停止，修正后重试。
+
+运行 `npm.cmd run build`、`npm.cmd run check`、`npm.cmd run preview` 检查展示，再按正常流程发布。
 
 ## 修改主题与备份
 

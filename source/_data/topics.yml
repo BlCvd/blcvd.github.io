@@ -1,0 +1,16 @@
+- id: papers
+  title: 论文阅读
+  description: 从研究问题到方法与实验，留下理解、疑问和参考资料。
+  categories:
+    - 论文阅读
+- id: ai
+  title: AI 实践
+  description: 把概念写成代码，在推导、复现与实验中验证想法。
+  categories:
+    - 技术学习
+    - 科研记录
+- id: engineering
+  title: 工程记录
+  description: 记录工具、系统与个人项目的实现过程和设计取舍。
+  categories:
+    - 工程实践

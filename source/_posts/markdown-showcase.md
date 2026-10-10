@@ -1,7 +1,7 @@
 ---
 title: Markdown、公式与流程图｜排版示例
 date: 2026-10-08 09:00:00
-updated: 2026-10-08 09:00:00
+updated: 2026-10-10 14:00:00
 slug: markdown-showcase
 categories:
   - 博客与写作
@@ -12,6 +12,14 @@ tags:
   - Mermaid
 toc: true
 demo: true
+research:
+  question: 如何在研究笔记中清楚呈现文字、公式、代码与图表？
+  takeaway: 本文展示本站的排版方式，内容均为示例，可作为写作时的检查清单。
+  prerequisites:
+    - Markdown 基础
+references:
+  - title: Hexo 官方文档
+    url: https://hexo.io/docs/
 ---
 
 一份用于检查中英文混排、代码高亮、LaTeX 公式、表格与流程图的示例。所有内容只用于展示博客能力。
@@ -90,4 +98,4 @@ flowchart TD
 
 ## 导航
 
-用右侧目录或手机顶部目录按钮在本篇内跳转。底部可返回[欢迎示例](/posts/welcome/)，也可以访问[分类](/categories/)与[标签](/tags/)。
+桌面用右侧固定目录，手机与平板用顶部目录按钮在本篇内跳转。底部可返回[欢迎示例](/posts/welcome/)，也可以访问[分类](/categories/)与[标签](/tags/)。

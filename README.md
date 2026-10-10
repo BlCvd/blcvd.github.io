@@ -1,6 +1,6 @@
 # Personal Research Blog
 
-面向 AI 学习、论文阅读与工程记录的个人博客。使用官方 Hexo / Icarus npm 主题，保留经典三栏布局，用少量独立 CSS 与 Hexo 注入扩展完成定制。没有复制参考作者的文章、头像或个人资料。
+面向 AI 学习、论文阅读与工程记录的个人博客。使用官方 Hexo / Icarus npm 主题，首页采用三栏布局，文章页采用宽正文与固定目录。通过独立 CSS 与 Hexo 扩展完成定制，主题可正常升级。
 
 线上博客：[Personal Research Blog](https://blcvd.github.io/) · [GitHub 源码仓库](https://github.com/BlCvd/blcvd.github.io)
 
@@ -33,6 +33,9 @@ Icarus 内部仍依赖 Hexo 7，但根目录使用 Hexo 8，已进行真实构�
 - Mermaid 12.1.0 在有图的文章页按需加载
 - 本地 Insight 全文搜索；Ctrl+K / Cmd+K 打开
 - 阅读时间、目录、前后文章、分类、标签、归档
+- 构建时生成的研究主题入口与列表，排除示例、草稿及未来文章
+- 科研文章阅读提要、引用链接、复现材料与文末作者资料
+- 数据驱动的项目分组、角色、状态、技术与成果链接
 - 浅色与深色模式、响应式布局、返回顶部、404
 - GitHub Actions 构建完整源码，GitHub Pages 托管 `public/`
 
@@ -44,10 +47,13 @@ Icarus 内部仍依赖 Hexo 7，但根目录使用 Hexo 8，已进行真实构�
 profile.yml              公开个人资料与首次发布确认状态
 _config.yml              Hexo 站点配置（身份字段由 profile 同步）
 _config.icarus.yml       Icarus 配置（个人卡片字段由 profile 同步）
+_config.post.yml         文章布局配置（只保留目录侧栏）
 source/_posts/           公开文章 Markdown
 source/_drafts/          本地草稿（Git 忽略，生产构建排除）
 source/about/            关于我
 source/projects/         项目展示
+source/_data/topics.yml  主题标题、说明与对应分类
+source/_data/projects.yml 公开项目与分组数据
 source/css/              字体与阅读样式
 source/js/               深色模式、代码复制、Mermaid 等
 source/img/              自有 SVG 与公开 GitHub 头像
@@ -61,6 +67,7 @@ tooling/                 可选本地工具（Git 忽略）
 ```
 
 文章分类与标签页由主题及生成器自动创建，只有实际使用的分类和标签才生成。
+研究主题有独立入口 `/topics/papers/`、`/topics/ai/`、`/topics/engineering/`；没有正式文章时显示明确空状态。项目列表默认为空，新增真实项目的方法见写作指南。
 
 ## 维护入口
 

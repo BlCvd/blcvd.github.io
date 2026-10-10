@@ -1,0 +1,13 @@
+intro: 从一个具体问题出发，记录实现过程、设计取舍与验证结果。
+groups:
+  - id: research
+    title: 研究工具
+    description: 面向论文阅读、实验复现与研究工作流的工具。
+  - id: ai
+    title: AI 应用
+    description: 把模型与方法放进实际场景，探索可用的实现。
+  - id: engineering
+    title: 工程项目
+    description: 软件、系统与开发工具，以及建设过程中的经验。
+# Only add real projects that are ready for public display. See BLOG_GUIDE.md.
+items: []

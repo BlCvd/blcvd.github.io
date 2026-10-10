@@ -1,0 +1,10 @@
+# Icarus supports per-layout configuration without modifying the npm theme.
+widgets:
+  - type: toc
+    position: right
+    index: true
+    collapsed: false
+    depth: 3
+sidebar:
+  right:
+    sticky: false

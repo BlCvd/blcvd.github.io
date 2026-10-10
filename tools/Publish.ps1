@@ -16,7 +16,7 @@ try {
     $expectedRepo = & node -e "const p=require('./tools/profile.cjs').load('profile.yml');process.stdout.write(p.author.github_username+'/'+p.author.github_username.toLowerCase()+'.github.io')"
     $expectedEscaped = [regex]::Escape($expectedRepo)
     if ($blogRemote -notmatch "github\.com[:/]$expectedEscaped(?:\.git)?$" ) { throw 'origin does not match the configured GitHub Pages repository.' }
-    & git add -- .github scaffolds scripts source tools .gitignore .gitattributes .nvmrc _config.yml _config.icarus.yml profile.yml package.json package-lock.json README.md BLOG_GUIDE.md DEPLOYMENT.md THIRD_PARTY.md
+    & git add -- .github scaffolds scripts source tools .gitignore .gitattributes .nvmrc _config.yml _config.icarus.yml _config.post.yml profile.yml package.json package-lock.json README.md BLOG_GUIDE.md DEPLOYMENT.md THIRD_PARTY.md
     if ($LASTEXITCODE -ne 0) { throw 'Could not stage blog source.' }
     & git diff --cached --quiet
     if ($LASTEXITCODE -eq 1) {

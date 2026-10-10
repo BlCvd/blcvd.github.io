@@ -3,7 +3,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
 const yaml = require('js-yaml');
+const { unescapeHTML } = require('hexo-util');
 const { root, load } = require('./profile.cjs');
+const { topics, projectData } = require('./content.cjs');
 const publicDir = path.join(root, 'public');
 const origin = new URL(load('profile.yml').site.url).origin;
 const failures = [];
@@ -16,7 +18,7 @@ function walk(dir) {
 }
 function resolveReference(reference, source) {
   if (!reference || /^(?:data|javascript|mailto|tel):/i.test(reference)) return;
-  const url = new URL(reference.replace(/&amp;/g, '&'), origin + '/' + path.relative(publicDir, source).replaceAll('\\', '/'));
+  const url = new URL(unescapeHTML(reference), origin + '/' + path.relative(publicDir, source).replaceAll('\\', '/'));
   if (url.origin !== origin) return;
   references++;
   const targetPath = path.join(publicDir, decodeURIComponent(url.pathname));
@@ -26,7 +28,7 @@ function resolveReference(reference, source) {
   if (url.hash && target.endsWith('.html')) {
     const anchor = decodeURIComponent(url.hash.slice(1));
     const content = fs.readFileSync(target, 'utf8');
-    const ids = [...content.matchAll(/\bid=["']([^"']+)["']/g)].map(match => match[1]);
+    const ids = [...content.matchAll(/\bid=["']([^"']+)["']/g)].map(match => unescapeHTML(match[1]));
     if (!ids.includes(anchor)) failures.push(`${path.relative(publicDir, source)} → missing anchor ${url.pathname}${url.hash}`);
   }
 }
@@ -43,7 +45,8 @@ for (const file of files) {
     for (const match of fs.readFileSync(file, 'utf8').matchAll(/url\(\s*["']?([^\s"')]+)["']?\s*\)/g)) resolveReference(match[1], file);
   }
 }
-for (const page of ['index.html', 'about/index.html', 'projects/index.html', '404.html', 'archives/index.html', 'categories/index.html', 'tags/index.html']) {
+const researchTopics = topics(yaml.load(fs.readFileSync(path.join(root, 'source/_data/topics.yml'), 'utf8')));
+for (const page of ['index.html', 'about/index.html', 'projects/index.html', '404.html', 'archives/index.html', 'categories/index.html', 'tags/index.html', ...researchTopics.map(topic => `topics/${topic.id}/index.html`)]) {
   assert(fs.existsSync(path.join(publicDir, page)), `Missing core page: ${page}`);
 }
 const search = JSON.parse(fs.readFileSync(path.join(publicDir, 'content.json'), 'utf8'));
@@ -55,8 +58,18 @@ if (fs.existsSync(showcase)) {
   assert(sample.includes('class="mermaid"'), 'Sample diagram missing');
   assert(sample.includes('class="highlight'), 'Sample code missing');
   assert(sample.includes('id="toc"'), 'Sample TOC missing');
+  assert(sample.includes('reading-page') && sample.includes('article-author'), 'Reading layout or author missing');
+  assert(sample.includes('article-brief') && sample.includes('article-resources'), 'Sample brief or references missing');
   assert(sample.includes('This is escaped example code') && sample.includes('&lt;') && !sample.includes('<script>alert('), 'Example HTML must remain escaped');
 }
+const home = fs.readFileSync(path.join(publicDir, 'index.html'), 'utf8');
+assert(home.includes('research-intro') && home.includes('research-topics'), 'Home entry points must be present without JavaScript');
+for (const topic of researchTopics) assert(home.includes(`href="/topics/${topic.id}/"`), 'Missing topic entry');
+const projects = projectData(yaml.load(fs.readFileSync(path.join(root, 'source/_data/projects.yml'), 'utf8')));
+const projectsHtml = fs.readFileSync(path.join(publicDir, 'projects/index.html'), 'utf8');
+for (const group of projects.groups) assert(projectsHtml.includes(`id="project-group-${group.id}"`), 'Project group missing');
+if (!projects.items.length) assert(projectsHtml.includes('目前尚未收录公开项目'), 'Empty projects must be clearly identified');
+const contentChecks = require('./content-check.cjs').run();
 const workflow = yaml.load(fs.readFileSync(path.join(root, '.github/workflows/pages.yml'), 'utf8'));
 assert.deepEqual(workflow.on.push.branches, ['main']);
 assert.equal(workflow.permissions.contents, 'read');
@@ -67,7 +80,7 @@ assert.equal(workflow.jobs.deploy.needs, 'build');
 assert(workflow.jobs.build.steps.some(step => step.run === 'npm ci'));
 assert(workflow.jobs.build.steps.some(step => step.run === 'npm run check'));
 if (failures.length) throw new Error(failures.join('\n'));
-const report = { htmlPages: htmlFiles.length, localReferences: references, brokenReferences: failures.length, searchPosts: search.posts.length, categories: search.categories.length, tags: search.tags.length, workflowStructure: 'passed' };
+const report = { htmlPages: htmlFiles.length, localReferences: references, brokenReferences: failures.length, searchPosts: search.posts.length, categories: search.categories.length, tags: search.tags.length, researchTopics: researchTopics.length, contentChecks, workflowStructure: 'passed' };
 fs.mkdirSync(path.join(root, 'reports'), { recursive: true });
 fs.writeFileSync(path.join(root, 'reports/site-check.json'), JSON.stringify(report, null, 2));
 console.log(JSON.stringify(report, null, 2));

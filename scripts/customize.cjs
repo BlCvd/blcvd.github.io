@@ -1,6 +1,8 @@
 'use strict';
 
 const { escapeHTML } = require('hexo-util');
+const { load } = require('../tools/profile.cjs');
+const { topics, homeIntro, articleBrief, articleEnding } = require('../tools/content.cjs');
 
 // Hexo's documented injection API keeps the npm theme unchanged and upgradeable.
 hexo.extend.injector.register('head_begin', `<script>(function(){try{var t=localStorage.getItem('research-theme');document.documentElement.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}catch(e){}})();</script>`);
@@ -16,8 +18,22 @@ hexo.extend.filter.register('after_post_render', data => {
   data.excerpt += `<div class="summary-tags">${tags}</div>`;
   return data;
 });
-hexo.extend.filter.register('after_render:html', html => html
-  .replace(', maximum-scale=1', '')
-  .replace('class="column order-2 column-main', 'id="main-content" class="column order-2 column-main')
-  // Stock column.js clones sidebar IDs. Keep one TOC and relocate it on mobile.
-  .replace(/<script\b[^>]*\bsrc=["']\/js\/column\.js["'][^>]*><\/script>/gi, ''));
+hexo.extend.filter.register('after_render:html', (html, locals) => {
+  html = html.replace(', maximum-scale=1', '')
+    .replace('class="column order-2 column-main', 'id="main-content" class="column order-2 column-main')
+    // Stock column.js clones sidebar IDs. Keep one TOC and relocate it on mobile.
+    .replace(/<script\b[^>]*\bsrc=["']\/js\/(?:column|toc)\.js["'][^>]*><\/script>/gi, '');
+  const page = locals.page;
+  if (page.__post) {
+    html = html.replace('<body class="', `<body class="reading-page ${html.includes('id="toc"') ? '' : 'without-toc '}`)
+      .replace(/(<h1\b[^>]*>[\s\S]*?<\/h1>)/, (_, heading) => heading + articleBrief(page))
+      .replace('</article>', () => articleEnding(page, load('profile.yml')) + '</article>');
+  } else if (page.research_topic || page.path === 'projects/index.html') {
+    html = html.replace('<body class="', '<body class="collection-page ');
+  }
+  if (locals.path === 'index.html') {
+    const intro = homeIntro(locals.config, topics(locals.site.data.topics), locals.site.posts.toArray());
+    html = html.replace(/(<div id="main-content"[^>]*>)/, (_, main) => main + intro);
+  }
+  return html;
+});

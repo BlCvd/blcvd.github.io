@@ -18,14 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateButton(); renderDiagrams();
   });
   document.querySelectorAll('.article-meta time').forEach(time => { time.textContent = time.dateTime.slice(0, 10); });
-  if (location.pathname === '/') {
-    const intro = document.createElement('header'); intro.className = 'research-intro';
-    const description = document.querySelector('meta[name="description"]')?.content || '记录人工智能学习、科研探索与工程实践。';
-    intro.innerHTML = '<div class="eyebrow">AI · RESEARCH · ENGINEERING</div><div class="intro-line"></div><h1>记录每一次理解与构建。</h1>';
-    intro.querySelector('.eyebrow').textContent = document.querySelector('meta[name="research-subtitle"]')?.content || 'AI · Research · Engineering';
-    const text = document.createElement('p'); text.textContent = description; intro.append(text);
-    document.querySelector('.column-main')?.prepend(intro);
-  }
   document.querySelectorAll('figure.highlight').forEach(figure => {
     let caption = figure.querySelector('figcaption');
     if (!caption) { caption = document.createElement('figcaption'); figure.prepend(caption); }
@@ -49,12 +41,75 @@ document.addEventListener('DOMContentLoaded', () => {
   backTop.addEventListener('click', () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }));
   const toc = document.querySelector('#toc');
   if (toc) {
+    // Own the drawer handlers; Icarus main.js has already attached its legacy toggles.
+    window.jQuery?.('#toc, #toc-mask, .navbar-main .catalogue').off('click');
+    const catalogue = document.querySelector('.navbar-main .catalogue');
+    const mask = document.querySelector('#toc-mask') || document.body.appendChild(document.createElement('div'));
+    mask.id = 'toc-mask';
+    const close = document.createElement('button');
+    close.type = 'button'; close.className = 'toc-close'; close.textContent = '关闭';
+    close.setAttribute('aria-label', '关闭文章目录');
+    toc.querySelector('.menu-label')?.append(close);
+    const compact = matchMedia(document.body.classList.contains('reading-page') ? '(max-width: 1023px)' : '(max-width: 768px)');
+    catalogue?.setAttribute('role', 'button'); catalogue?.setAttribute('aria-controls', 'toc');
+    catalogue?.setAttribute('aria-label', '打开文章目录'); catalogue?.setAttribute('aria-expanded', 'false');
+    const setTocOpen = (open, restoreFocus = false) => {
+      toc.classList.toggle('is-active', open); mask.classList.toggle('is-active', open);
+      root.classList.toggle('toc-open', open);
+      catalogue?.setAttribute('aria-expanded', String(open));
+      if (compact.matches) toc.setAttribute('aria-hidden', String(!open));
+      if (open) requestAnimationFrame(() => { if (toc.classList.contains('is-active')) close.focus(); });
+      else if (restoreFocus) catalogue?.focus();
+    };
+    catalogue?.addEventListener('click', event => { event.preventDefault(); setTocOpen(!toc.classList.contains('is-active')); });
+    catalogue?.addEventListener('keydown', event => { if (event.key === ' ') { event.preventDefault(); catalogue.click(); } });
+    close.addEventListener('click', () => setTocOpen(false, true));
+    mask.addEventListener('click', () => setTocOpen(false, true));
     const anchor = document.createComment('Desktop TOC position'); toc.before(anchor);
     const relocateToc = () => {
-      if (matchMedia('(max-width: 768px)').matches) document.body.append(toc);
-      else { anchor.after(toc); toc.classList.remove('is-active'); document.querySelector('#toc-mask')?.classList.remove('is-active'); }
+      setTocOpen(false);
+      if (compact.matches) {
+        document.body.append(toc); toc.setAttribute('aria-hidden', 'true');
+        toc.setAttribute('role', 'dialog'); toc.setAttribute('aria-modal', 'true');
+        toc.setAttribute('aria-label', '文章目录');
+      } else {
+        anchor.after(toc); toc.removeAttribute('aria-hidden'); toc.removeAttribute('aria-modal');
+        toc.setAttribute('role', 'navigation'); toc.setAttribute('aria-label', '文章目录');
+      }
     };
-    relocateToc(); addEventListener('resize', relocateToc, { passive: true });
+    relocateToc(); compact.addEventListener('change', relocateToc);
+    const entries = [...toc.querySelectorAll('a[href^="#"]')].map(menu => ({
+      menu, heading: document.getElementById(decodeURIComponent(menu.getAttribute('href').slice(1)))
+    })).filter(entry => entry.heading);
+    for (const { menu, heading } of entries) {
+      heading.tabIndex = -1;
+      menu.addEventListener('click', () => {
+        if (compact.matches) setTocOpen(false);
+        heading.focus({ preventScroll: true });
+      });
+    }
+    let frame;
+    const updateActive = () => {
+      frame = undefined;
+      const current = entries.filter(entry => entry.heading.getBoundingClientRect().top <= 120).at(-1) || entries[0];
+      for (const entry of entries) {
+        const active = entry === current; entry.menu.classList.toggle('is-active', active);
+        if (active) entry.menu.setAttribute('aria-current', 'location');
+        else entry.menu.removeAttribute('aria-current');
+      }
+    };
+    addEventListener('scroll', () => { frame ||= requestAnimationFrame(updateActive); }, { passive: true });
+    updateActive();
+    document.addEventListener('keydown', event => {
+      if (!compact.matches || !toc.classList.contains('is-active')) return;
+      if (event.key === 'Escape') setTocOpen(false, true);
+      if (event.key === 'Tab') {
+        const items = [...toc.querySelectorAll('button,a[href]')].filter(item => item.getClientRects().length);
+        const first = items[0], last = items.at(-1);
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    });
   }
   // Improve stock Insight dialog keyboard navigation without changing its index format.
   const searchbox = document.querySelector('.searchbox');

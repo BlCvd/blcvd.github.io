@@ -3,6 +3,10 @@ title: {{ title }}
 date: {{ date }}
 updated: {{ date }}
 slug:
+type: paper
+series:
+related: []
+featured: false
 categories:
   - 论文阅读
 tags:

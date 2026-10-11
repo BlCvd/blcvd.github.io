@@ -46,19 +46,26 @@ git push -u origin main
 `.github/workflows/pages.yml` 使用当前已核验的 GitHub 官方 Actions，固定 release commit，步骤如下：
 
 ```text
-main push / 手动运行
+main push / 面向 main 的 PR / 手动运行
   → checkout
   → setup-node（22.x，npm 缓存）
   → npm ci
+  → setup-python / 安装 Chromium 与中文字体
   → npm run build
   → npm run check
   → 发布确认与源码凭据检查
+  → 浏览器验收（搜索、阅读、响应式、SEO 与订阅）
+  → 临时真实内容验收 / 恢复源文件与生产产物
+  → 保存验收报告与截图（7 天）
+  → PR 在此结束；以下仅 main
   → upload-pages-artifact（仅 public）
   → configure-pages（部署任务内）
   → deploy-pages
 ```
 
-构建任务只有 `contents: read`。部署任务只额外获得 `pages: write` 和 `id-token: write`，环境为 `github-pages`。不会使用个人访问令牌。每次同一站点只保留一个部署过程，避免新旧构建互相覆盖。
+构建任务只有 `contents: read`。部署任务只额外获得 `pages: write` 和 `id-token: write`，环境为 `github-pages`。不会使用个人访问令牌。同一分支的新构建取消旧构建；PR 验收不会取消 main 发布，也不能上传或部署 Pages 产物。任何构建、浏览器或内容验收失败均阻止部署。
+
+在每次 Actions 的 Artifacts 中下载 `browser-review`，可查看桌面、文章、深色、手机与临时系列截图及 JSON 报告。临时内容只用于验收，脚本在 `finally` 中恢复源码并重建，再检查临时路由不存在；清理或重建失败会使整个任务失败。只有恢复后的 `public/` 可被上传。
 
 本地执行 `npm.cmd ci` 验证锁文件安装，然后 build / check。工作流本地语法检查可运行 `tooling/actionlint.exe .github/workflows/pages.yml`；真正的 Linux 执行与 Pages 上传结果以 GitHub Actions 为准。
 

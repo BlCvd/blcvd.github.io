@@ -2,6 +2,7 @@
 
 const { escapeHTML } = require('hexo-util');
 const assert = require('node:assert/strict');
+const editorial = require('./editorial.cjs');
 const text = value => escapeHTML(String(value ?? ''));
 
 function link(value) {
@@ -33,7 +34,7 @@ function topics(values) {
 }
 
 function postsFor(posts, topic) {
-  return posts.filter(post => !post.demo && post.published !== false && Number(post.date) <= Date.now()
+  return posts.filter(post => editorial.isFormal(post)
     && post.categories.toArray().some(category => topic.categories.includes(category.name)));
 }
 
@@ -44,8 +45,8 @@ function topicCards(values, posts) {
   }).join('')}</div></section>`;
 }
 
-function homeIntro(config, values, posts) {
-  return `<header class="research-intro"><div class="eyebrow">${text(config.subtitle)}</div><div class="intro-line"></div><h1>记录每一次理解与构建。</h1><p>${text(config.description)}</p></header>${topicCards(values, posts)}<div class="section-caption latest-caption"><h2>最近的记录</h2><a href="/archives/">全部文章 <span aria-hidden="true">↗</span></a></div>`;
+function homeIntro(config, values, posts, profile, series) {
+  return editorial.homePage(config, profile, topicCards(values, posts), editorial.edition(posts, series));
 }
 
 function topicPage(topic, posts, values) {

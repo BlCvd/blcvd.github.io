@@ -66,3 +66,14 @@ pagination_dir: page
 theme: icarus
 toc: true
 deploy: {}
+feed:
+  enable: true
+  type:
+    - atom
+    - rss2
+  path:
+    - atom.xml
+    - rss.xml
+  limit: 50
+  content: false
+  autodiscovery: false

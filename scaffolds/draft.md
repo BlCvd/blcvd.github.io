@@ -3,6 +3,10 @@ title: {{ title }}
 date: {{ date }}
 updated: {{ date }}
 slug:
+type: article
+series:
+related: []
+featured: false
 categories:
   - 技术学习
 tags: []

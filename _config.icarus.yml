@@ -23,18 +23,23 @@ head:
 navbar:
   menu:
     首页: /
-    归档: /archives/
-    分类: /categories/
-    标签: /tags/
+    文章: /writing/
+    系列: /series/
     项目: /projects/
     关于: /about/
   links:
+    RSS:
+      icon: fas fa-rss
+      url: /subscribe/
     GitHub:
       icon: fab fa-github
       url: https://github.com/BlCvd
 footer:
   copyright: 记录、理解、构建。
-  links: {}
+  links:
+    订阅更新:
+      icon: fas fa-rss
+      url: /subscribe/
 article:
   highlight:
     theme: atom-one-light

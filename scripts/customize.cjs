@@ -3,6 +3,8 @@
 const { escapeHTML } = require('hexo-util');
 const { load } = require('../tools/profile.cjs');
 const { topics, homeIntro, articleBrief, articleEnding } = require('../tools/content.cjs');
+const { edition, articleNavigation, articleLabel } = require('../tools/editorial.cjs');
+const { headMarkup } = require('../tools/seo.cjs');
 
 // Hexo's documented injection API keeps the npm theme unchanged and upgradeable.
 hexo.extend.injector.register('head_begin', `<script>(function(){try{var t=localStorage.getItem('research-theme');document.documentElement.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}catch(e){}})();</script>`);
@@ -24,16 +26,18 @@ hexo.extend.filter.register('after_render:html', (html, locals) => {
     // Stock column.js clones sidebar IDs. Keep one TOC and relocate it on mobile.
     .replace(/<script\b[^>]*\bsrc=["']\/js\/(?:column|toc)\.js["'][^>]*><\/script>/gi, '');
   const page = locals.page;
+  const profile = load('profile.yml');
+  const model = edition(locals.site.posts.toArray(), locals.site.data.series);
   if (page.__post) {
     html = html.replace('<body class="', `<body class="reading-page ${html.includes('id="toc"') ? '' : 'without-toc '}`)
-      .replace(/(<h1\b[^>]*>[\s\S]*?<\/h1>)/, (_, heading) => heading + articleBrief(page))
-      .replace('</article>', () => articleEnding(page, load('profile.yml')) + '</article>');
-  } else if (page.research_topic || page.path === 'projects/index.html') {
+      .replace(/(<h1\b[^>]*>[\s\S]*?<\/h1>)/, (_, heading) => articleLabel(page) + heading + articleBrief(page))
+      .replace('</article>', () => articleNavigation(page, model) + articleEnding(page, profile) + '</article>');
+  } else if (page.research_topic || page.research_collection || page.path === 'projects/index.html') {
     html = html.replace('<body class="', '<body class="collection-page ');
   }
   if (locals.path === 'index.html') {
-    const intro = homeIntro(locals.config, topics(locals.site.data.topics), locals.site.posts.toArray());
-    html = html.replace(/(<div id="main-content"[^>]*>)/, (_, main) => main + intro);
+    const intro = homeIntro(locals.config, topics(locals.site.data.topics), locals.site.posts.toArray(), profile, locals.site.data.series);
+    html = html.replace('<body class="', '<body class="home-page ').replace(/(<div id="main-content"[^>]*>)/, (_, main) => main + intro);
   }
-  return html;
+  return headMarkup(html, locals, model, profile, topics(locals.site.data.topics), locals.site.data.projects.items.length, hexo.config);
 });

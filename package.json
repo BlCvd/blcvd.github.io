@@ -28,6 +28,7 @@
     "hexo": "8.1.2",
     "hexo-generator-archive": "2.0.0",
     "hexo-generator-category": "2.0.0",
+    "hexo-generator-feed": "4.0.0",
     "hexo-generator-index": "4.0.0",
     "hexo-generator-tag": "2.0.0",
     "hexo-server": "3.0.0",
@@ -40,6 +41,7 @@
     "markdown-it": "15.0.2",
     "markdown-it-texmath": "1.0.0",
     "mermaid": "12.1.0",
-    "moment": "2.31.0"
+    "moment": "2.31.0",
+    "sharp": "0.35.5"
   }
 }

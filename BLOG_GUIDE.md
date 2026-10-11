@@ -18,6 +18,8 @@ npm.cmd run dev
 title: 我的第一篇研究笔记
 date: 2026-10-09 10:00:00
 slug: my-first-note
+type: article
+description: 用一句话说明这篇文章的问题与结论
 categories:
   - 技术学习
 tags:
@@ -45,15 +47,63 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Publish.ps1 -Che
 
 也可以直接新建公开文章：`npm.cmd run new -- "文章名称"`。仓库里所有 `source/_posts/` 内容都会公开；用草稿目录保存尚未准备好的文字。
 
-## 三类模板
+## 五种内容与模板
 
 ```powershell
 npm.cmd run new -- "普通技术笔记"
+npm.cmd run new -- note "一条短笔记"
 npm.cmd run new -- paper "论文阅读：标题"
+npm.cmd run new -- experiment "复现：实验名称"
 npm.cmd run new -- project "项目：名称"
 ```
 
-这三个命令会写入 `_posts`。若还不适合公开，请先用 `draft`，再把 `scaffolds/paper.md` 或 `project.md` 的章节复制到草稿正文。模板中的 `待补充` 需由你依据真实材料填写。你可以自由修改 `scaffolds/`，后续新文章采用更新后的模板。
+这些命令会写入 `_posts`。若还不适合公开，请先用 `draft`，再把所需模板的章节与字段复制到草稿。模板中的 `待补充` 需依据真实材料填写。
+
+| type | 展示名称 | 适合内容 |
+| --- | --- | --- |
+| article | 技术长文 | 概念、推导、方法与工程分析 |
+| note | 短笔记 | 单个观察、问题或解决办法 |
+| paper | 论文阅读 | 问题、方法、证据、局限与引用 |
+| experiment | 实验复现 | 环境、步骤、真实结果与误差 |
+| project | 项目记录 | 目标、角色、实现、状态与验证 |
+
+`type` 决定文章页徽标和 `/writing/` 筛选，分类决定研究主题，标签描述领域。旧文章未填 `type` 时按 `article` 处理。短笔记模板默认不显示目录；你可修改 `toc`。未知类型、重复 slug、错误日期等会让构建失败。`updated` 应为真实修改时间且不得早于 `date`。
+
+## 系列、精选与关联文章
+
+在 `source/_data/series.yml` 的 `items` 中定义一个实际系列：
+
+```yaml
+items:
+  - id: your-series
+    title: 你的系列标题
+    description: 说明阅读目标与覆盖范围
+    prerequisites:
+      - 必要前置知识
+```
+
+给该系列的正式文章添加：
+
+```yaml
+series:
+  id: your-series
+  order: 1
+related:
+  - another-published-slug
+featured: true
+```
+
+`id` 用唯一的小写 ASCII 名称；`order` 用正整数，同系列不能重复，阅读按这个字段排序。系列有两篇以上正式文章时才出现在系列入口、首页和站点地图。单篇系列可从文章跳转，但不占用首页系列推荐。系列文章末尾自动显示完整阅读路径和真实的上一篇、下一篇。
+
+`related` 填其他已公开正式文章的 slug；未发布、未来文章、示例或不存在的 slug 会让构建失败。没有关联文章时保留 `[]`。`featured: true` 手动加入精选，首页最多显示最近更新的两篇精选；最近记录最多显示六篇。未填这些字段的旧文章仍能正常发布，网址保持不变。
+
+## 正式内容与订阅
+
+`demo: true` 表示排版示例，继续保留公开网址，并在首页和文章入口的折叠区域展示。示例不进入正式主题、类型筛选、系列、精选、搜索或订阅。草稿、未来日期与 `published: false` 文章不进入生产站点。公开仓库中的 `_posts` 源码仍可被访问；未准备好的内容应放入被 Git 忽略的 `_drafts`。
+
+订阅入口为 `/subscribe/`，Atom 地址为 `/atom.xml`，RSS 地址为 `/rss.xml`。发布后自动更新，默认保留最新 50 篇正式文章；目前没有正式文章时输出有效的空订阅源。
+
+每页有规范网址和 JSON-LD；文章提供真实发表与修改日期，自动生成 1200 × 630 PNG 分享卡片。标题、简介和修改时间变化会生成新图片地址。示例、空列表、归档和 404 页面保留可访问网址并标记 `noindex`，站点地图仅收录可索引的内容页面。修改网站域名时同步 `profile.yml` 后重新构建。
 
 ## 分类与标签
 

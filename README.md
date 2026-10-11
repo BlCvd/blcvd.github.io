@@ -1,6 +1,6 @@
 # Personal Research Blog
 
-面向 AI 学习、论文阅读与工程记录的个人博客。使用官方 Hexo / Icarus npm 主题，首页采用三栏布局，文章页采用宽正文与固定目录。通过独立 CSS 与 Hexo 扩展完成定制，主题可正常升级。
+面向 AI 学习、论文阅读与工程记录的个人博客。使用官方 Hexo / Icarus npm 主题，首页集中展示研究主题、精选与最近记录，文章页采用宽正文与固定目录。通过独立 CSS 与 Hexo 扩展完成定制，主题可正常升级。
 
 线上博客：[Personal Research Blog](https://blcvd.github.io/) · [GitHub 源码仓库](https://github.com/BlCvd/blcvd.github.io)
 
@@ -36,8 +36,10 @@ Icarus 内部仍依赖 Hexo 7，但根目录使用 Hexo 8，已进行真实构�
 - 构建时生成的研究主题入口与列表，排除示例、草稿及未来文章
 - 科研文章阅读提要、引用链接、复现材料与文末作者资料
 - 数据驱动的项目分组、角色、状态、技术与成果链接
+- 五种内容类型与文章筛选；显式系列顺序、前后篇及相关文章
+- Atom / RSS 订阅、站点地图、规范网址、JSON-LD 与自动生成的中文 PNG 分享卡片
 - 浅色与深色模式、响应式布局、返回顶部、404
-- GitHub Actions 构建完整源码，GitHub Pages 托管 `public/`
+- GitHub Actions 对 main 和 PR 执行静态、浏览器与真实内容验收；仅 main 发布 Pages
 
 数学采用构建时 KaTeX，自定义脚本不修改主题文件。深色模式由独立 CSS 变量实现。默认不启用访客计数、第三方评论或广告。
 
@@ -54,10 +56,11 @@ source/about/            关于我
 source/projects/         项目展示
 source/_data/topics.yml  主题标题、说明与对应分类
 source/_data/projects.yml 公开项目与分组数据
+source/_data/series.yml  系列定义、说明与前置知识
 source/css/              字体与阅读样式
 source/js/               深色模式、代码复制、Mermaid 等
 source/img/              自有 SVG 与公开 GitHub 头像
-scaffolds/               写作、论文笔记、项目介绍模板
+scaffolds/               长文、短笔记、论文、实验与项目模板
 scripts/                 Hexo 扩展
 tools/                   资源准备、发布检查与 PowerShell 发布脚本
 .github/workflows/       Pages 自动化部署
@@ -68,6 +71,22 @@ tooling/                 可选本地工具（Git 忽略）
 
 文章分类与标签页由主题及生成器自动创建，只有实际使用的分类和标签才生成。
 研究主题有独立入口 `/topics/papers/`、`/topics/ai/`、`/topics/engineering/`；没有正式文章时显示明确空状态。项目列表默认为空，新增真实项目的方法见写作指南。
+文章入口为 `/writing/`，系列为 `/series/`，订阅为 `/subscribe/`。两篇示例保留原网址，在文章入口的折叠区域展示，不进入正式内容搜索、主题、系列、精选或订阅。原归档、分类和标签仍可访问。
+
+## 自动验收
+
+`npm.cmd run check` 检查本地链接、公式输出、内容字段、系列顺序、规范网址、JSON-LD 和分享图片。浏览器验收还覆盖搜索、复制、目录、深色模式、手机与平板布局：
+
+```powershell
+python -m pip install -r tools/requirements-browser.txt
+python -m playwright install chromium
+python -X utf8 tools/browser_ci.py
+python -X utf8 tools/content-integration.py
+```
+
+先执行 `npm.cmd run build`。Python 工具用临时本地端口提供静态产物，结束后关闭服务。集成验收临时写入两篇正式文章、未来文章、未发布文章和草稿，检查系列、筛选、订阅与排除规则；无论成功与否都恢复源文件并重建生产产物。失败会阻止 CI 部署。`reports/` 保存结果与截图，Actions 保留它们 7 天。
+
+日常构建仅需 Node.js 22；浏览器验收使用 Python 3.13 与锁定版本的 Playwright。PNG 卡片由 sharp 在构建时生成；Windows 使用微软雅黑，Linux 工作流安装 Noto CJK 字体。
 
 ## 维护入口
 

@@ -21,7 +21,7 @@ function scan(dir) {
     const file = path.join(dir, entry.name);
     if (entry.isDirectory()) { scan(file); continue; }
     if (/^\.env(?:\.|$)|\.(?:pem|key|pfx)$/i.test(entry.name)) throw new Error(`Sensitive file in publishable source: ${file}`);
-    if (/\.(?:md|js|cjs|json|yml|yaml|html|css|ps1)$/.test(file)) {
+    if (/\.(?:md|js|cjs|json|yml|yaml|html|css|ps1|py|txt)$/.test(file)) {
       const text = fs.readFileSync(file, 'utf8');
       if (patterns.some(pattern => pattern.test(text))) throw new Error(`Potential credential in publishable source: ${file}`);
     }

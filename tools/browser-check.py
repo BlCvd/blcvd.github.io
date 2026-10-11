@@ -2,13 +2,16 @@
 from pathlib import Path
 import json
 import os
+import struct
+import xml.etree.ElementTree as ET
+from urllib.parse import quote, urlparse
 from playwright.sync_api import sync_playwright
 
 base = os.environ.get('BLOG_TEST_URL', 'http://127.0.0.1:4000').rstrip('/')
 reports = Path(__file__).resolve().parents[1] / 'reports'
 reports.mkdir(exist_ok=True)
 results = []
-routes = ['/', '/posts/welcome/', '/posts/markdown-showcase/', '/about/', '/projects/', '/404.html', '/archives/', '/categories/', '/tags/', '/categories/博客与写作/', '/tags/Markdown/', '/topics/papers/', '/topics/ai/', '/topics/engineering/']
+routes = ['/', '/writing/', '/series/', '/subscribe/', '/posts/welcome/', '/posts/markdown-showcase/', '/about/', '/projects/', '/404.html', '/archives/', '/categories/', '/tags/', '/categories/博客与写作/', '/tags/Markdown/', '/topics/papers/', '/topics/ai/', '/topics/engineering/']
 
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
@@ -21,32 +24,77 @@ with sync_playwright() as p:
     page.on('pageerror', lambda error: errors.append(str(error)))
     page.on('requestfailed', lambda request: failed_requests.append(request.url))
     page.on('request', lambda request: network.append(request.url))
+    search_data = context.request.get(base + '/content.json').json()
+    formal_count = len(search_data['posts'])
+    assert all('/posts/welcome/' not in entry['link'] and '/posts/markdown-showcase/' not in entry['link'] for entry in search_data['posts'])
+    share_images = set()
     for route in routes:
         response = page.goto(base + route, wait_until='networkidle')
         assert response.status == 200, (route, response.status)
         assert not page.evaluate('document.documentElement.scrollWidth > innerWidth'), route
+        canonical = page.locator('link[rel=canonical]')
+        assert canonical.count() == 1, route
+        canonical_url = canonical.get_attribute('href')
+        assert urlparse(canonical_url).path == quote(route), (route, canonical_url)
+        schema = json.loads(page.locator('script[type="application/ld+json"]').inner_text())
+        assert schema['url'] == canonical_url, route
+        assert page.locator('link[rel=alternate][type="application/atom+xml"]').count() == 1
+        assert page.locator('link[rel=alternate][type="application/rss+xml"]').count() == 1
+        share_images.add(page.locator('meta[property="og:image"]').get_attribute('content'))
         results.append({'page': route, 'status': response.status})
+    canonical_origin = urlparse(canonical_url).scheme + '://' + urlparse(canonical_url).netloc
+    for image_url in share_images:
+        response = context.request.get(base + urlparse(image_url).path)
+        assert response.status == 200
+        image_bytes = response.body()
+        assert image_bytes[:8] == b'\x89PNG\r\n\x1a\n'
+        assert struct.unpack('>II', image_bytes[16:24]) == (1200, 630)
+    atom = ET.fromstring(context.request.get(base + '/atom.xml').body())
+    rss = ET.fromstring(context.request.get(base + '/rss.xml').body())
+    atom_entries = atom.findall('{http://www.w3.org/2005/Atom}entry')
+    rss_entries = rss.findall('./channel/item')
+    assert len(atom_entries) == len(rss_entries) == min(50, formal_count)
+    sitemap = ET.fromstring(context.request.get(base + '/sitemap.xml').body())
+    sitemap_urls = [node.text for node in sitemap.findall('.//{http://www.sitemaps.org/schemas/sitemap/0.9}loc')]
+    assert len(sitemap_urls) == len(set(sitemap_urls))
+    assert canonical_origin + '/' in sitemap_urls
+    assert not any('/posts/welcome/' in url or '/posts/markdown-showcase/' in url for url in sitemap_urls)
+    results.append({'formalPosts': formal_count, 'feedEntries': len(atom_entries), 'sitemapUrls': len(sitemap_urls), 'shareImages': len(share_images)})
     page.goto(base, wait_until='networkidle')
     page.screenshot(path=str(reports / 'desktop.png'), full_page=True)
-    columns = page.locator('.columns > .column').evaluate_all('(els)=>els.map(e=>({x:e.getBoundingClientRect().x,width:e.getBoundingClientRect().width}))')
+    columns = page.locator('.columns > .column').evaluate_all('(els)=>els.filter(e=>e.getBoundingClientRect().width>0).map(e=>({x:e.getBoundingClientRect().x,width:e.getBoundingClientRect().width}))')
     assert all(column['width'] > 100 for column in columns), columns
+    assert page.locator('.home-sections').is_visible()
+    assert page.locator('.hero-links a').count() == 3
     assert page.locator('.research-intro').count() == 1
     assert page.locator('.topic-card').count() == 3
     page.locator('.topic-card').first.click()
     page.wait_for_url(base + '/topics/papers/')
-    assert page.locator('.collection-empty').is_visible()
-    assert page.locator('.collection-count').inner_text() == '0 篇文章'
+    if page.locator('.collection-entry').count() == 0:
+        assert page.locator('.collection-empty').is_visible()
     page.goto(base + '/projects/', wait_until='networkidle')
     assert page.locator('.project-group').count() == 3
-    assert page.locator('.project-entry').count() == 0
-    assert '目前尚未收录公开项目' in page.locator('.projects-notice').inner_text()
+    if page.locator('.project-entry').count() == 0:
+        assert '目前尚未收录公开项目' in page.locator('.projects-notice').inner_text()
     page.screenshot(path=str(reports / 'projects.png'), full_page=True)
+    page.goto(base + '/writing/', wait_until='networkidle')
+    assert page.locator('.type-filters button').count() == 6
+    assert page.locator('.writing-page > .writing-list > li').count() == formal_count
+    page.locator('.type-filters button[data-kind=paper]').click()
+    assert '?type=paper' in page.url
+    assert page.locator('.type-filters button[data-kind=paper]').get_attribute('aria-pressed') == 'true'
+    page.locator('.type-filters button[data-kind=all]').click()
+    assert '?type=' not in page.url
+    page.screenshot(path=str(reports / 'writing.png'), full_page=True)
+    page.goto(base + '/subscribe/', wait_until='networkidle')
+    assert page.locator('.feed-options a').count() == 2
     page.goto(base, wait_until='networkidle')
     page.locator('.navbar-item.search').click()
     input_box = page.locator('.searchbox-input')
-    input_box.fill('Markdown')
+    input_box.fill('关注')
     page.wait_for_timeout(350)
-    assert page.locator('.searchbox-body a[href="/posts/markdown-showcase/"]').count() > 0
+    assert page.locator('.searchbox-body a[href="/about/"]').count() > 0
+    assert page.locator('.searchbox-body a[href="/posts/markdown-showcase/"]').count() == 0
     page.keyboard.press('Escape')
     assert not page.locator('.searchbox').evaluate('(e)=>e.classList.contains("show")')
     page.keyboard.press('Control+k')
@@ -109,7 +157,7 @@ with sync_playwright() as p:
     page.get_by_role('button', name='切换到浅色模式').click()
     for width in [320, 390, 768, 820, 1024]:
         page.set_viewport_size({'width': width, 'height': 844})
-        for route in ['/', '/posts/markdown-showcase/', '/categories/', '/about/', '/projects/', '/topics/papers/']:
+        for route in ['/', '/writing/', '/series/', '/subscribe/', '/posts/markdown-showcase/', '/categories/', '/about/', '/projects/', '/topics/papers/']:
             page.goto(base + route, wait_until='networkidle')
             assert not page.evaluate('document.documentElement.scrollWidth > innerWidth'), (route, width)
         results.append({'responsiveWidth': width, 'overflow': False})
@@ -158,7 +206,11 @@ with sync_playwright() as p:
     assert static_page.locator('.research-intro').count() == 1
     assert static_page.locator('.topic-card').count() == 3
     static_page.locator('.topic-card').first.click()
-    assert static_page.locator('.collection-empty').is_visible()
+    if static_page.locator('.collection-entry').count() == 0:
+        assert static_page.locator('.collection-empty').is_visible()
+    static_page.goto(base + '/writing/', wait_until='networkidle')
+    assert not static_page.locator('.type-filters').is_visible()
+    assert static_page.locator('.writing-page > .writing-list > li').count() == formal_count
     no_js.close()
     browser.close()
 

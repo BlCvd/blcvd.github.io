@@ -111,6 +111,29 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+  // Enhance the server-rendered list; without JavaScript all formal entries remain readable.
+  const writing = document.querySelector('.writing-page');
+  if (writing) {
+    const filters = writing.querySelector('.type-filters');
+    const entries = [...writing.querySelectorAll(':scope > .writing-list > .writing-entry')];
+    const buttons = [...filters.querySelectorAll('button')];
+    filters.hidden = false;
+    const applyType = (kind, updateUrl = false) => {
+      if (!buttons.some(button => button.dataset.kind === kind)) kind = 'all';
+      for (const entry of entries) entry.hidden = kind !== 'all' && entry.dataset.kind !== kind;
+      for (const button of buttons) button.setAttribute('aria-pressed', String(button.dataset.kind === kind));
+      const count = entries.filter(entry => !entry.hidden).length;
+      writing.querySelector('.collection-count').textContent = `${count} 篇正式文章`;
+      writing.querySelector('.writing-no-results').hidden = count > 0 || entries.length === 0;
+      if (updateUrl) {
+        const url = new URL(location.href);
+        if (kind === 'all') url.searchParams.delete('type'); else url.searchParams.set('type', kind);
+        history.replaceState(null, '', url);
+      }
+    };
+    for (const button of buttons) button.addEventListener('click', () => applyType(button.dataset.kind, true));
+    applyType(new URLSearchParams(location.search).get('type') || 'all');
+  }
   // Improve stock Insight dialog keyboard navigation without changing its index format.
   const searchbox = document.querySelector('.searchbox');
   if (searchbox) {

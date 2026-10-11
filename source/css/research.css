@@ -192,3 +192,87 @@ html.toc-open{overflow:hidden}
   .project-empty{margin-left:29px!important}
   .project-entry{padding:20px}
 }
+
+/* A compact research front page with a visible path into writing and series. */
+[hidden]{display:none!important}
+.home-page .container:not(.navbar-container){max-width:1110px!important;width:calc(100% - 48px)!important}
+.home-page .columns{display:block;margin:0}
+.home-page .column-main{width:100%!important;padding:0}
+.home-page .column-left,.home-page .column-right{display:none!important}
+.home-hero{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:56px;padding:22px 0 36px;margin-bottom:30px}
+.home-hero h1{font-size:36px;letter-spacing:-.8px;line-height:1.5;margin:16px 0 12px}
+.home-hero .hero-copy>p{font-size:16px;max-width:610px}
+.hero-links{display:flex;gap:24px;flex-wrap:wrap;margin-top:24px;font-size:14px}
+.hero-author{border-left:1px solid var(--line);padding-left:32px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:8px}
+.hero-author img{border-radius:50%;border:4px solid var(--paper);margin-bottom:4px}
+.hero-author>a:first-of-type{font-size:22px;font-weight:500;color:var(--ink)}
+.hero-author p{font-size:12px;line-height:1.8}
+.home-page .topic-card{padding:22px 24px}
+.home-page .topic-card p{font-size:14px}
+.home-page .research-topics{margin-bottom:36px}
+.home-sections{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:40px}
+.home-records{min-width:0}
+.home-records>.section-caption h2{font-size:18px}
+.home-empty{padding:26px 0 30px;border-top:1px solid var(--line)}
+.home-empty h3{font-size:21px;font-weight:500;margin-bottom:10px}
+.home-empty p,.home-reading p{color:var(--muted);font-size:14px;line-height:1.9}
+.home-reading>section{padding:24px;border:1px solid var(--line);border-radius:8px;background:var(--paper);margin-bottom:18px}
+.home-reading h2{font-size:19px;font-weight:500;margin:12px 0}
+.home-reading .brief-label{color:var(--accent);font-size:12px}
+.home-series-link{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:12px 0;border-top:1px solid var(--line)}
+.home-series-link span{white-space:nowrap;font-size:11px;color:var(--muted)}
+.writing-list{list-style:none!important;margin-left:0!important}
+.writing-entry{padding:24px 0;border-bottom:1px solid var(--line)}
+.entry-meta{display:flex;align-items:center;gap:16px;font-size:12px;color:var(--muted);flex-wrap:wrap;margin-bottom:10px}
+.content-kind{display:inline-block;font-size:11px;line-height:1.7;color:var(--accent);background:var(--soft);border:1px solid var(--line);border-radius:4px;padding:2px 8px}
+.writing-entry h2,.content .writing-entry h2{font-size:22px;font-weight:500;border:0;margin:0 0 12px;padding:0;line-height:1.6}
+.writing-entry p{font-size:14px;line-height:1.9;color:var(--muted);margin-bottom:0!important}
+.demo-samples{border-top:1px solid var(--line);margin-top:18px;padding:18px 0}
+.demo-samples>summary{cursor:pointer;color:var(--accent);font-size:14px;padding:8px 0}
+.demo-samples>p{font-size:13px;color:var(--muted);line-height:1.8;margin:12px 0}
+.writing-tools{padding:24px 0 16px}
+.type-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.type-filters button{font:inherit;font-size:13px;border:1px solid var(--line);border-radius:5px;background:var(--paper);color:var(--muted);padding:7px 12px;cursor:pointer}
+.type-filters button[aria-pressed=true]{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+.browse-links{display:flex;flex-wrap:wrap;gap:20px;font-size:13px}
+.series-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:30px}
+.series-card{padding:26px;border:1px solid var(--line);border-radius:8px}
+.content .series-card h2{font-size:22px;margin:14px 0;border:0}
+.series-card p{font-size:15px;color:var(--muted)}
+.series-prerequisites{padding:20px;background:var(--soft);border-radius:6px;margin:24px 0;font-size:15px}
+.series-prerequisites p:last-child{margin:0}
+.article-labels{margin-bottom:16px}
+.article-series,.article-related{border-top:1px solid var(--line);margin-top:32px;padding-top:24px;font-size:14px;line-height:1.8}
+.article-series ol{list-style:decimal;margin:12px 0 22px 24px}
+.article-series li{margin-bottom:8px}
+.article-series a[aria-current=page]{color:var(--ink);font-weight:500}
+.series-neighbors{display:grid;grid-template-columns:1fr 1fr;gap:18px;font-size:13px;color:var(--muted)}
+.series-neighbors>*:last-child{text-align:right}
+.article-related ul{list-style:disc;margin-left:20px}
+.feed-options{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:32px 0}
+.feed-options>a{display:block;border:1px solid var(--line);border-radius:8px;padding:28px;color:var(--ink)}
+.feed-options>a:hover{border-color:var(--accent);text-decoration:none}
+.content .feed-options h2{font-size:22px;border:0;margin:18px 0 12px;padding:0}
+.feed-options p,.subscription-status{font-size:15px;line-height:1.9;color:var(--muted)}
+.feed-address{font-family:'Source Code Pro',monospace;font-size:13px;color:var(--accent)}
+@media(max-width:900px){.home-sections{grid-template-columns:minmax(0,1fr) 240px;gap:24px}.home-hero{gap:28px}.home-hero h1{font-size:30px}}
+@media(max-width:768px){
+  .home-page .container:not(.navbar-container){width:calc(100% - 28px)!important}
+  .home-hero{grid-template-columns:1fr;gap:20px;padding:10px 4px 26px;margin-bottom:24px}
+  .home-hero h1{font-size:27px;line-height:1.55}
+  .home-hero .hero-copy>p{font-size:14px}
+  .hero-links{gap:16px;font-size:13px;margin-top:18px}
+  .hero-author{display:none}
+  .home-page .topic-card{padding:14px 15px}
+  .home-page .topic-card p{font-size:12px}
+  .home-sections{grid-template-columns:1fr;gap:22px}
+  .home-reading{display:grid;grid-template-columns:1fr;gap:12px}
+  .home-reading>section{margin:0;padding:22px}
+  .home-empty h3{font-size:19px}
+  .writing-entry h2,.content .writing-entry h2{font-size:19px}
+  .series-list,.feed-options{grid-template-columns:1fr;gap:16px}
+  .feed-options>a{padding:22px}
+  .content .feed-options h2{font-size:20px}
+  .series-neighbors{grid-template-columns:1fr}
+  .series-neighbors>*:last-child{text-align:left}
+}

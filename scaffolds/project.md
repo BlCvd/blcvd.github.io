@@ -3,6 +3,10 @@ title: {{ title }}
 date: {{ date }}
 updated: {{ date }}
 slug:
+type: project
+series:
+related: []
+featured: false
 categories:
   - 工程实践
 tags:
